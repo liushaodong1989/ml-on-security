@@ -1,0 +1,206 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.WebPayloadClassify</groupId>
+  <artifactId>web_payload_classify</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>web_payload_classify</name>
+  <url>http://maven.apache.org</url>
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <nd4j.backend>nd4j-cuda-7.5-platform</nd4j.backend>
+    <java.version>1.7</java.version>
+    <nd4j.version>0.7.2</nd4j.version>
+    <dl4j.version>0.7.2</dl4j.version>
+    <datavec.version>0.7.2</datavec.version>
+    <guava.version>19.0</guava.version>
+    <jfreechart.version>1.0.13</jfreechart.version>
+    <jcommon.version>1.0.23</jcommon.version>
+    <exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
+    <maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
+    <shadedClassifier>bin</shadedClassifier>
+    <scala.binary.version>2.11</scala.binary.version>
+    <spark.version>1.6.0</spark.version>
+    <scala.version>2.11.7</scala.version>
+    <spark.scope>compile</spark.scope>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deeplearning4j</groupId>
+      <artifactId>dl4j-spark_${scala.binary.version}</artifactId>
+      <version>${dl4j.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>spark-core_2.10</artifactId>
+          <groupId>org.apache.spark</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_${scala.binary.version}</artifactId>
+      <version>${spark.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>${spark.scope}</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nd4j</groupId>
+      <artifactId>nd4j-native-platform</artifactId>
+      <version>${nd4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nd4j</groupId>
+      <artifactId>nd4j-cuda-7.5-platform</artifactId>
+      <version>${nd4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.deeplearning4j</groupId>
+      <artifactId>deeplearning4j-parallel-wrapper</artifactId>
+      <version>${dl4j.version}</version>
+    </dependency>
+
+    <!-- Core DL4J functionality -->
+    <dependency>
+      <groupId>org.deeplearning4j</groupId>
+      <artifactId>deeplearning4j-core</artifactId>
+      <version>${dl4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.deeplearning4j</groupId>
+      <artifactId>deeplearning4j-nlp</artifactId>
+      <version>${dl4j.version}</version>
+    </dependency>
+
+    <!-- deeplearning4j-ui is used for HistogramIterationListener + visualization: see http://deeplearning4j.org/visualization -->
+    <dependency>
+      <groupId>org.deeplearning4j</groupId>
+      <artifactId>deeplearning4j-ui_2.10</artifactId>
+      <version>${dl4j.version}</version>
+    </dependency>
+
+    <!-- Force guava versions for using UI/HistogramIterationListener -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nd4j</groupId>
+      <artifactId>nd4j-cuda-7.5</artifactId>
+      <version>0.7.2</version>
+    </dependency>
+
+    <!-- datavec-data-codec: used only in video example for loading video data -->
+    <dependency>
+      <artifactId>datavec-data-codec</artifactId>
+      <groupId>org.datavec</groupId>
+      <version>${datavec.version}</version>
+    </dependency>
+
+    <!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions example -->
+    <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>${jfreechart.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jcommon</artifactId>
+      <version>${jcommon.version}</version>
+    </dependency>
+
+    <!-- Used for downloading data in some of the examples -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.3.5</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <!--这里要替换成jar包main方法所在类 -->
+              <mainClass>com.WebPayloadClassify.PayloadRNNClassify</mainClass>
+            </manifest>
+            <manifestEntries>
+              <Class-Path>.</Class-Path>
+            </manifestEntries>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- 指定在打包节点执行jar包合并操作 -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <args>
+                <arg>-dependencyfile</arg>
+                <arg>${project.build.directory}/.scala_dependencies</arg>
+              </args>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
